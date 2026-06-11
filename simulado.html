@@ -1,0 +1,1990 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado em Foco — Aprenda. Evolua. Conquiste.</title>
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+  ============================================================ */
+  :root {
+    --bg:          #0B0A15;
+    --surface:     #13111F;
+    --surface2:    #1C1931;
+    --border:      rgba(124,58,237,0.18);
+    --border2:     rgba(255,255,255,0.07);
+    --violet:      #7C3AED;
+    --violet-lt:   #A855F7;
+    --teal:        #06B6D4;
+    --teal-lt:     #67E8F9;
+    --amber:       #F59E0B;
+    --amber-lt:    #FCD34D;
+    --green:       #10B981;
+    --red:         #EF4444;
+    --text:        #F8FAFC;
+    --text-muted:  #94A3B8;
+    --text-dim:    #475569;
+    --glow-v:      rgba(124,58,237,0.35);
+    --glow-t:      rgba(6,182,212,0.25);
+    --glow-a:      rgba(245,158,11,0.4);
+    --radius-sm:   8px;
+    --radius:      14px;
+    --radius-lg:   22px;
+    --radius-xl:   32px;
+    --font:        'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono:        'SF Mono', 'Fira Code', monospace;
+    --shadow:      0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg:   0 12px 48px rgba(0,0,0,0.6);
+  }
+
+  /* ============================================================
+     RESET & BASE
+  ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  img { max-width: 100%; display: block; }
+  button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+  a { text-decoration: none; color: inherit; }
+
+  /* ============================================================
+     SCROLLBAR
+  ============================================================ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 99px; }
+
+  /* ============================================================
+     UTILITY
+  ============================================================ */
+  .hidden { display: none !important; }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--violet-lt), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border2);
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .badge-violet { background: rgba(124,58,237,0.18); color: var(--violet-lt); border: 1px solid rgba(124,58,237,0.3); }
+  .badge-teal   { background: rgba(6,182,212,0.15);  color: var(--teal-lt);   border: 1px solid rgba(6,182,212,0.25); }
+  .badge-amber  { background: rgba(245,158,11,0.15); color: var(--amber-lt);  border: 1px solid rgba(245,158,11,0.3); }
+  .badge-green  { background: rgba(16,185,129,0.15); color: #6EE7B7;          border: 1px solid rgba(16,185,129,0.3); }
+
+  /* ============================================================
+     ANIMATED BACKGROUND BLOBS
+  ============================================================ */
+  .bg-blobs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.18;
+    animation: blobFloat 12s ease-in-out infinite;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--violet); top: -100px; left: -100px; animation-delay: 0s; }
+  .blob-2 { width: 400px; height: 400px; background: var(--teal); bottom: 10%; right: -80px; animation-delay: 4s; }
+  .blob-3 { width: 300px; height: 300px; background: var(--amber); bottom: 30%; left: 30%; animation-delay: 8s; }
+  @keyframes blobFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-40px) scale(1.05); }
+    66% { transform: translate(-20px,20px) scale(0.95); }
+  }
+
+  /* ============================================================
+     NAVIGATION
+  ============================================================ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 5%;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(11,10,21,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border2);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--violet), var(--teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px var(--glow-v);
+  }
+  .nav-logo-text {
+    font-size: 15px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .nav-logo-text span { color: var(--violet-lt); }
+  .nav-links {
+    display: flex; align-items: center; gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    padding: 9px 22px; border-radius: 99px; font-size: 13px; font-weight: 600;
+    background: linear-gradient(135deg, var(--violet), var(--violet-lt));
+    color: #fff;
+    box-shadow: 0 0 20px var(--glow-v);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--glow-v); }
+
+  /* ============================================================
+     SCREEN SYSTEM
+  ============================================================ */
+  .screen { position: relative; z-index: 1; }
+
+  /* ============================================================
+     LANDING — HERO
+  ============================================================ */
+  #screen-landing { min-height: 100vh; }
+
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 100px 5% 60px;
+    position: relative;
+  }
+  .hero-eyebrow {
+    margin-bottom: 24px;
+  }
+  .hero-title {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.03em;
+    max-width: 800px; margin: 0 auto 24px;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-muted);
+    max-width: 520px; margin: 0 auto 44px;
+    line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-primary {
+    padding: 14px 32px; border-radius: 99px; font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, var(--violet), var(--violet-lt));
+    color: #fff;
+    box-shadow: 0 0 30px var(--glow-v);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 44px var(--glow-v); }
+
+  .btn-secondary {
+    padding: 14px 32px; border-radius: 99px; font-size: 15px; font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border: 1px solid var(--border2);
+    backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+  .hero-stats {
+    margin-top: 72px;
+    display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat-num {
+    font-size: 32px; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--teal-lt), var(--violet-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* floating cards */
+  .hero-float-cards {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .float-card {
+    position: absolute; padding: 12px 16px; border-radius: var(--radius);
+    background: rgba(19,17,31,0.85); border: 1px solid var(--border2);
+    backdrop-filter: blur(16px); font-size: 13px; font-weight: 500;
+    animation: floatUp 4s ease-in-out infinite;
+    white-space: nowrap;
+  }
+  .fc1 { top: 22%; left: 6%; animation-delay: 0s; }
+  .fc2 { top: 35%; right: 7%; animation-delay: 1.5s; }
+  .fc3 { bottom: 22%; left: 8%; animation-delay: 3s; }
+  .fc4 { top: 60%; right: 5%; animation-delay: 2s; }
+  @keyframes floatUp {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .float-card-icon { font-size: 16px; margin-right: 6px; }
+
+  /* ============================================================
+     SECTION COMMONS
+  ============================================================ */
+  section { padding: 96px 5%; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--violet-lt); margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.2;
+    letter-spacing: -0.025em; margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 17px; color: var(--text-muted); max-width: 520px; line-height: 1.7;
+  }
+  .section-header { margin-bottom: 56px; }
+  .section-header.centered { text-align: center; }
+  .section-header.centered .section-sub { margin: 0 auto; }
+
+  /* ============================================================
+     HOW IT WORKS
+  ============================================================ */
+  .how-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+  .how-card {
+    padding: 32px 28px; border-radius: var(--radius-lg);
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .how-card::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, var(--violet), var(--teal));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .how-card:hover { transform: translateY(-4px); border-color: var(--border); }
+  .how-card:hover::before { opacity: 0.06; }
+  .how-step {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--violet), var(--violet-lt));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 20px;
+    box-shadow: 0 0 20px var(--glow-v);
+  }
+  .how-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .how-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ============================================================
+     FEATURES
+  ============================================================ */
+  .features-bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    gap: 16px;
+  }
+  .feat-card {
+    padding: 32px; border-radius: var(--radius-lg);
+    background: var(--surface); border: 1px solid var(--border2);
+    transition: border-color 0.3s, transform 0.3s;
+    overflow: hidden; position: relative;
+  }
+  .feat-card:hover { border-color: var(--border); transform: translateY(-3px); }
+  .feat-card.span-4 { grid-column: span 4; }
+  .feat-card.span-5 { grid-column: span 5; }
+  .feat-card.span-6 { grid-column: span 6; }
+  .feat-card.span-7 { grid-column: span 7; }
+  .feat-card.span-8 { grid-column: span 8; }
+  .feat-card.span-12 { grid-column: span 12; }
+  .feat-icon {
+    font-size: 32px; margin-bottom: 18px;
+  }
+  .feat-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .feat-card p { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
+  .feat-highlight {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.08));
+    border-color: rgba(124,58,237,0.3);
+  }
+
+  /* points burst mini demo */
+  .mini-demo {
+    margin-top: 20px; padding: 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .mini-demo-score {
+    font-size: 28px; font-weight: 800;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* ============================================================
+     STATS BAND
+  ============================================================ */
+  .stats-band {
+    background: var(--surface);
+    border-top: 1px solid var(--border2);
+    border-bottom: 1px solid var(--border2);
+    padding: 56px 5%;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 40px; text-align: center;
+  }
+  .stat-num {
+    font-size: 44px; font-weight: 900; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--violet-lt), var(--teal-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ============================================================
+     TESTIMONIALS
+  ============================================================ */
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .testi-card {
+    padding: 28px; border-radius: var(--radius-lg);
+    background: var(--surface); border: 1px solid var(--border2);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .testi-card:hover { border-color: var(--border); transform: translateY(-3px); }
+  .testi-stars { color: var(--amber); font-size: 14px; margin-bottom: 14px; }
+  .testi-text { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+    background: linear-gradient(135deg, var(--violet), var(--teal));
+  }
+  .testi-name { font-size: 13px; font-weight: 700; }
+  .testi-role { font-size: 12px; color: var(--text-muted); }
+
+  /* ============================================================
+     FOOTER
+  ============================================================ */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border2);
+    padding: 56px 5% 32px;
+  }
+  .footer-top {
+    display: flex; gap: 48px; flex-wrap: wrap; margin-bottom: 48px;
+    justify-content: space-between;
+  }
+  .footer-brand { max-width: 280px; }
+  .footer-brand p { font-size: 14px; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+  .footer-col h4 { font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { font-size: 14px; color: var(--text-muted); transition: color 0.2s; }
+  .footer-col a:hover { color: var(--text); }
+  .footer-bottom {
+    border-top: 1px solid var(--border2); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    font-size: 13px; color: var(--text-dim);
+  }
+
+  /* ============================================================
+     DASHBOARD SCREEN
+  ============================================================ */
+  #screen-dashboard {
+    min-height: 100vh;
+    padding: 88px 5% 40px;
+  }
+  .dashboard-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  .dash-welcome { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  .dash-name { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .dash-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+  .dash-stat-card {
+    padding: 22px 24px; border-radius: var(--radius);
+    background: var(--surface); border: 1px solid var(--border2);
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .dash-stat-card:hover { border-color: var(--border); }
+  .dash-stat-card::after {
+    content: '';
+    position: absolute; top: -20px; right: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--accent, var(--violet)); opacity: 0.08; pointer-events: none;
+  }
+  .dash-stat-icon { font-size: 22px; margin-bottom: 14px; }
+  .dash-stat-value { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+  .dash-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .progress-section {
+    display: grid; grid-template-columns: 2fr 1fr;
+    gap: 16px; margin-bottom: 32px;
+  }
+  .progress-card {
+    padding: 28px; border-radius: var(--radius-lg);
+    background: var(--surface); border: 1px solid var(--border2);
+  }
+  .progress-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
+  .level-bar-wrap { margin-bottom: 16px; }
+  .level-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .level-label span:first-child { color: var(--text-muted); }
+  .level-label span:last-child { font-weight: 700; }
+  .bar-track {
+    height: 10px; border-radius: 99px; background: rgba(255,255,255,0.07);
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 10px var(--glow-v);
+  }
+
+  .medals-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .medal-item {
+    padding: 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.3s;
+    opacity: 0.4;
+  }
+  .medal-item.earned { opacity: 1; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+  .medal-emoji { font-size: 22px; }
+  .medal-name { font-size: 12px; font-weight: 700; }
+  .medal-req { font-size: 11px; color: var(--text-muted); }
+
+  .dash-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ============================================================
+     QUIZ SCREEN
+  ============================================================ */
+  #screen-quiz {
+    min-height: 100vh;
+    padding: 88px 0 40px;
+    display: flex; flex-direction: column;
+  }
+  .quiz-layout {
+    display: grid; grid-template-columns: 1fr 320px;
+    gap: 20px; padding: 0 5%; flex: 1;
+    align-items: start;
+  }
+  .quiz-main { }
+  .quiz-sidebar { position: sticky; top: 90px; }
+
+  /* progress bar */
+  .quiz-progress-bar {
+    height: 6px; background: rgba(255,255,255,0.07);
+    position: fixed; top: 68px; left: 0; right: 0; z-index: 99;
+  }
+  .quiz-progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--violet), var(--teal));
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 8px var(--glow-v);
+  }
+
+  .quiz-header { margin-bottom: 24px; }
+  .quiz-meta {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 8px;
+  }
+  .q-counter { font-size: 13px; color: var(--text-muted); }
+  .q-counter span { font-weight: 700; color: var(--text); }
+  .q-timer {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+  }
+
+  /* question card */
+  .question-card {
+    padding: 36px; border-radius: var(--radius-xl);
+    background: var(--surface); border: 1px solid var(--border2);
+    margin-bottom: 20px;
+    animation: slideIn 0.4s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .q-text {
+    font-size: 18px; font-weight: 600; line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .q-options { display: flex; flex-direction: column; gap: 12px; }
+  .q-option {
+    padding: 16px 20px; border-radius: var(--radius);
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 14px;
+    text-align: left; width: 100%;
+    color: var(--text);
+  }
+  .q-option:hover:not(:disabled) {
+    background: rgba(124,58,237,0.1);
+    border-color: rgba(124,58,237,0.4);
+    transform: translateX(4px);
+  }
+  .q-option .opt-letter {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; letter-spacing: 0.02em;
+    transition: all 0.2s;
+  }
+  .q-option.correct {
+    background: rgba(16,185,129,0.12);
+    border-color: rgba(16,185,129,0.5);
+    color: #6EE7B7;
+  }
+  .q-option.correct .opt-letter { background: var(--green); color: #fff; border-color: var(--green); }
+  .q-option.wrong {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.4);
+    color: #FCA5A5;
+  }
+  .q-option.wrong .opt-letter { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* feedback box */
+  .feedback-box {
+    padding: 20px 24px; border-radius: var(--radius);
+    margin-bottom: 16px; display: flex; gap: 16px; align-items: flex-start;
+    animation: fadeInUp 0.3s ease;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); }
+  .feedback-wrong   { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); }
+  .feedback-icon { font-size: 24px; flex-shrink: 0; }
+  .feedback-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .feedback-text  { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* next button */
+  .btn-next {
+    padding: 14px 32px; border-radius: 99px; font-size: 15px; font-weight: 700;
+    background: linear-gradient(135deg, var(--violet), var(--violet-lt));
+    color: #fff; width: 100%;
+    box-shadow: 0 0 24px var(--glow-v);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 0 36px var(--glow-v); }
+
+  /* sidebar cards */
+  .sidebar-card {
+    padding: 22px; border-radius: var(--radius-lg);
+    background: var(--surface); border: 1px solid var(--border2);
+    margin-bottom: 14px;
+  }
+  .sidebar-card h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 16px; }
+  .sidebar-score {
+    font-size: 40px; font-weight: 900; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .sidebar-score-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .live-stat { padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.04); text-align: center; }
+  .live-stat-val { font-size: 20px; font-weight: 800; }
+  .live-stat-lbl { font-size: 11px; color: var(--text-muted); }
+  .live-correct .live-stat-val { color: var(--green); }
+  .live-wrong   .live-stat-val { color: var(--red); }
+
+  .q-map { display: flex; gap: 6px; flex-wrap: wrap; }
+  .q-dot {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(255,255,255,0.05); border: 1.5px solid var(--border2);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; color: var(--text-dim);
+  }
+  .q-dot.current { border-color: var(--violet); background: rgba(124,58,237,0.15); color: var(--violet-lt); }
+  .q-dot.done-c  { background: rgba(16,185,129,0.18); border-color: rgba(16,185,129,0.4); color: var(--green); }
+  .q-dot.done-w  { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--red); }
+
+  .session-time { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .session-time-label { font-size: 12px; color: var(--text-muted); }
+
+  /* ============================================================
+     REWARD POP-UP
+  ============================================================ */
+  .reward-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .reward-card {
+    text-align: center; padding: 48px 56px; border-radius: var(--radius-xl);
+    background: var(--surface); border: 1px solid rgba(245,158,11,0.3);
+    box-shadow: 0 0 80px rgba(245,158,11,0.15), var(--shadow-lg);
+    animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    max-width: 380px; width: 90%; position: relative; overflow: hidden;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .reward-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .reward-emoji { font-size: 64px; margin-bottom: 12px; animation: bounce 0.5s ease 0.2s both; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-12px) scale(1.1); }
+  }
+  .reward-label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+  .reward-points {
+    font-size: 72px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .reward-points-label { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+  .reward-message { font-size: 17px; font-weight: 600; margin-bottom: 28px; }
+  .reward-continue {
+    padding: 12px 32px; border-radius: 99px; font-size: 14px; font-weight: 700;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    color: #000;
+    transition: transform 0.2s;
+  }
+  .reward-continue:hover { transform: scale(1.04); }
+  /* particles */
+  .particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .particle {
+    position: absolute; width: 8px; height: 8px; border-radius: 50%;
+    animation: particleFly 1s ease-out forwards;
+  }
+  @keyframes particleFly {
+    from { opacity: 1; transform: translate(0,0) scale(1); }
+    to   { opacity: 0; transform: var(--tx, translate(80px,-120px)) scale(0); }
+  }
+
+  /* achievement pop */
+  .achievement-toast {
+    position: fixed; bottom: 32px; right: 32px; z-index: 300;
+    padding: 18px 24px; border-radius: var(--radius-lg);
+    background: var(--surface2); border: 1px solid rgba(245,158,11,0.35);
+    box-shadow: 0 0 40px rgba(245,158,11,0.1), var(--shadow-lg);
+    display: flex; align-items: center; gap: 16px;
+    animation: toastIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    max-width: 320px;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(100px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .achievement-toast-icon { font-size: 36px; }
+  .achievement-toast-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 2px; }
+  .achievement-toast-name { font-size: 16px; font-weight: 700; }
+  .achievement-toast-sub { font-size: 12px; color: var(--text-muted); }
+
+  /* ============================================================
+     RESULTS SCREEN
+  ============================================================ */
+  #screen-results {
+    min-height: 100vh; padding: 88px 5% 60px;
+  }
+  .results-hero {
+    text-align: center; padding: 56px 0 48px;
+  }
+  .results-emoji { font-size: 72px; margin-bottom: 16px; }
+  .results-title { font-size: 40px; font-weight: 900; letter-spacing: -0.025em; margin-bottom: 10px; }
+  .results-sub { font-size: 17px; color: var(--text-muted); max-width: 460px; margin: 0 auto; }
+  .results-main-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
+    gap: 20px; margin-bottom: 24px;
+  }
+  .result-card {
+    padding: 28px; border-radius: var(--radius-lg);
+    background: var(--surface); border: 1px solid var(--border2);
+  }
+  .result-card h3 { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .big-score {
+    font-size: 64px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .big-score-sub { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+  .result-accuracy { font-size: 52px; font-weight: 900; letter-spacing: -0.03em; }
+  .result-accuracy.good  { color: var(--green); }
+  .result-accuracy.ok    { color: var(--amber); }
+  .result-accuracy.low   { color: var(--red); }
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border2); font-size: 14px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row-label { color: var(--text-muted); }
+  .result-row-val { font-weight: 700; }
+  .rewards-history { display: flex; flex-direction: column; gap: 8px; }
+  .reward-history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-radius: 10px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+    font-size: 13px;
+  }
+  .rhi-q { color: var(--text-muted); }
+  .rhi-pts {
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--amber), var(--amber-lt));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .medals-earned-grid {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .me-item {
+    padding: 14px 18px; border-radius: 14px;
+    background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2);
+    text-align: center;
+  }
+  .me-emoji { font-size: 28px; margin-bottom: 6px; }
+  .me-name { font-size: 12px; font-weight: 700; }
+  .analysis-box {
+    padding: 28px; border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(6,182,212,0.08));
+    border: 1px solid rgba(124,58,237,0.25); margin-bottom: 24px;
+  }
+  .analysis-box h3 { font-size: 14px; font-weight: 700; color: var(--violet-lt); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .analysis-box p { font-size: 16px; line-height: 1.7; color: var(--text-muted); }
+  .results-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ============================================================
+     LOADING SCREEN
+  ============================================================ */
+  #screen-loading {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 24px;
+  }
+  .loader-ring {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 3px solid rgba(124,58,237,0.2);
+    border-top-color: var(--violet);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { font-size: 15px; color: var(--text-muted); }
+  .skeleton-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+    width: min(400px, 90vw);
+  }
+  .skel {
+    height: 12px; border-radius: 99px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+  .skel.h20 { height: 20px; }
+  .skel.w-full { grid-column: 1/-1; }
+  .skel.w-2 { grid-column: span 2; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* ============================================================
+     ONBOARDING MODAL
+  ============================================================ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    animation: fadeIn 0.25s ease;
+  }
+  .modal {
+    width: min(480px,92vw); padding: 44px;
+    border-radius: var(--radius-xl);
+    background: var(--surface); border: 1px solid var(--border2);
+    box-shadow: var(--shadow-lg);
+    animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .modal-icon { font-size: 48px; margin-bottom: 18px; }
+  .modal-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .modal-sub { font-size: 15px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.65; }
+  .modal-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+  .modal-form input {
+    width: 100%; padding: 13px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.05); border: 1.5px solid var(--border2);
+    color: var(--text); font-size: 15px; font-family: inherit;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+  .modal-form input:focus { outline: none; border-color: var(--violet); }
+  .modal-form input::placeholder { color: var(--text-dim); }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 900px) {
+    .quiz-layout { grid-template-columns: 1fr; }
+    .quiz-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .progress-section { grid-template-columns: 1fr; }
+    .feat-card.span-4,.feat-card.span-5,.feat-card.span-7,.feat-card.span-8 { grid-column: span 12; }
+    .feat-card.span-6 { grid-column: span 12; }
+    .nav-links { display: none; }
+    .fc3, .fc4 { display: none; }
+  }
+  @media (max-width: 600px) {
+    nav { padding: 0 4%; }
+    section { padding: 64px 4%; }
+    .quiz-sidebar { grid-template-columns: 1fr; }
+    .dashboard-header { flex-direction: column; align-items: flex-start; }
+    .float-card { display: none; }
+    .results-main-grid { grid-template-columns: 1fr; }
+    .achievement-toast { bottom: 16px; right: 16px; left: 16px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BACKGROUND ATMOSPHERE
+============================================================ -->
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🎯</div>
+    <div class="nav-logo-text">Simulado<span> em Foco</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#sec-como">Como Funciona</a></li>
+    <li><a href="#sec-recursos">Recursos</a></li>
+    <li><a href="#sec-depoimentos">Depoimentos</a></li>
+  </ul>
+  <button class="nav-cta" onclick="App.showOnboarding()">Iniciar Agora →</button>
+</nav>
+
+<!-- ============================================================
+     SCREEN: LOADING
+============================================================ -->
+<div id="screen-loading" class="screen hidden">
+  <div class="loader-ring"></div>
+  <p class="loader-text">Preparando seu simulado…</p>
+  <div class="skeleton-grid">
+    <div class="skel h20 w-full"></div>
+    <div class="skel w-2"></div>
+    <div class="skel"></div>
+    <div class="skel w-full"></div>
+    <div class="skel"></div>
+    <div class="skel w-2"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: LANDING
+============================================================ -->
+<div id="screen-landing" class="screen">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-float-cards">
+      <div class="float-card fc1"><span class="float-card-icon">🎉</span> +200 pontos desbloqueados!</div>
+      <div class="float-card fc2"><span class="float-card-icon">💎</span> Conquista: Mestre do Simulado</div>
+      <div class="float-card fc3"><span class="float-card-icon">🔥</span> 8 acertos consecutivos</div>
+      <div class="float-card fc4"><span class="float-card-icon">⚡</span> Taxa de acerto: 90%</div>
+    </div>
+
+    <div class="hero-eyebrow">
+      <span class="badge badge-violet">✨ Plataforma Gamificada de Estudos</span>
+    </div>
+    <h1 class="hero-title">
+      Transforme seus estudos em uma <span class="gradient-text">experiência envolvente.</span>
+    </h1>
+    <p class="hero-sub">
+      Ganhe recompensas inesperadas enquanto evolui seu desempenho. Cada acerto pode valer 10 ou 200 pontos — você nunca sabe.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="App.showOnboarding()">Começar Agora 🚀</button>
+      <a href="#sec-como" class="btn-secondary">▶ Conhecer a Plataforma</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">47k+</div>
+        <div class="hero-stat-label">Alunos ativos</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">2.3M</div>
+        <div class="hero-stat-label">Questões respondidas</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">+68%</div>
+        <div class="hero-stat-label">Tempo médio de estudo</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4.9★</div>
+        <div class="hero-stat-label">Avaliação dos alunos</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="sec-como">
+    <div class="section-header centered">
+      <div class="section-label">Como Funciona</div>
+      <h2 class="section-title">Simples de usar. <span class="gradient-text">Impossível de largar.</span></h2>
+      <p class="section-sub">Quatro passos para transformar sua rotina de estudos em uma experiência que realmente engaja.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-step">📝</div>
+        <h3>Escolha o Simulado</h3>
+        <p>Selecione sua área e inicie. O sistema carrega um banco de questões calibradas ao seu nível.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">🎯</div>
+        <h3>Responda as Questões</h3>
+        <p>Cada questão apresenta 4 alternativas. Leia com atenção e selecione sua resposta.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">🎁</div>
+        <h3>Receba Recompensas</h3>
+        <p>Ao acertar, um valor surpresa de pontos é desbloqueado. Pode ser 10 ou pode ser 200 — ninguém sabe!</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">📊</div>
+        <h3>Analise seu Desempenho</h3>
+        <p>Ao final, um dashboard detalhado mostra sua evolução, pontuação e conquistas desbloqueadas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECURSOS (BENTO) -->
+  <section id="sec-recursos">
+    <div class="section-header">
+      <div class="section-label">Recursos</div>
+      <h2 class="section-title">Tecnologia a serviço <span class="gradient-text">do seu aprendizado.</span></h2>
+    </div>
+    <div class="features-bento">
+      <div class="feat-card span-7 feat-highlight">
+        <div class="feat-icon">🎲</div>
+        <h3>Pontuação Dinâmica Imprevisível</h3>
+        <p>O coração da plataforma. Cada acerto gera uma recompensa aleatória — 10, 20, 50, 100 ou 200 pontos. A surpresa cria o mesmo loop de engajamento dos melhores jogos do mundo.</p>
+        <div class="mini-demo">
+          <span style="font-size:24px">🎉</span>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:2px">SURPRESA! Você ganhou</div>
+            <div class="mini-demo-score">+100 pontos</div>
+          </div>
+        </div>
+      </div>
+      <div class="feat-card span-5">
+        <div class="feat-icon">🏆</div>
+        <h3>Sistema de Conquistas</h3>
+        <p>Desbloqueie medalhas conforme evolui: Iniciante, Persistente, Focado e Mestre do Simulado. Pop-ups animados celebram cada conquista.</p>
+        <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+          <span class="badge badge-amber">🏅 Iniciante</span>
+          <span class="badge badge-amber">🥈 Persistente</span>
+          <span class="badge badge-amber">🥇 Focado</span>
+          <span class="badge badge-amber">💎 Mestre</span>
+        </div>
+      </div>
+      <div class="feat-card span-4">
+        <div class="feat-icon">⚡</div>
+        <h3>Feedback em Tempo Real</h3>
+        <p>Acertos e erros recebem respostas imediatas com mensagens motivacionais e explicações contextuais.</p>
+      </div>
+      <div class="feat-card span-4">
+        <div class="feat-icon">📈</div>
+        <h3>Dashboard de Engajamento</h3>
+        <p>Painel lateral atualizado ao vivo com acertos, erros, pontuação, tempo de sessão e questões restantes.</p>
+      </div>
+      <div class="feat-card span-4">
+        <div class="feat-icon">📋</div>
+        <h3>Relatório Final Detalhado</h3>
+        <p>Ao concluir, receba análise automática de desempenho com histórico completo de recompensas.</p>
+      </div>
+      <div class="feat-card span-12">
+        <div class="feat-icon">🔬</div>
+        <h3>Hipótese Validada pela Ciência Comportamental</h3>
+        <p style="max-width:700px">O reforço de razão variável — recompensas imprevisíveis — é o mecanismo mais eficaz para criar comportamentos persistentes, segundo décadas de pesquisa em psicologia comportamental (Skinner, 1938). É o mesmo princípio por trás do Duolingo, jogos mobile e sistemas de pontos modernos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div class="stats-band">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">47.293</div>
+        <div class="stat-label">Estudantes cadastrados</div>
+      </div>
+      <div>
+        <div class="stat-num">+68%</div>
+        <div class="stat-label">Aumento no tempo de estudo</div>
+      </div>
+      <div>
+        <div class="stat-num">2.3M</div>
+        <div class="stat-label">Questões respondidas</div>
+      </div>
+      <div>
+        <div class="stat-num">94%</div>
+        <div class="stat-label">Taxa de conclusão dos simulados</div>
+      </div>
+      <div>
+        <div class="stat-num">4.9/5</div>
+        <div class="stat-label">Avaliação média dos usuários</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOIMENTOS -->
+  <section id="sec-depoimentos">
+    <div class="section-header centered">
+      <div class="section-label">Depoimentos</div>
+      <h2 class="section-title">Alunos que <span class="gradient-text">transformaram seus estudos.</span></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Nunca fiquei tão tempo estudando sem perceber. A incerteza dos pontos me deixava ansioso para responder mais. É viciante da melhor forma."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MC</div>
+          <div>
+            <div class="testi-name">Mateus Carvalho</div>
+            <div class="testi-role">Estudante de Medicina · UFPR</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Usei por 3 semanas antes do vestibular. Minha nota subiu 15 pontos. A gamificação me mantinha focado mesmo nas questões difíceis."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JL</div>
+          <div>
+            <div class="testi-name">Julia Lima</div>
+            <div class="testi-role">Aprovada em Direito · USP</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Como professor, recomendo para todos os alunos. A plataforma resolve o problema mais difícil da educação: manter o aluno engajado."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">RS</div>
+          <div>
+            <div class="testi-name">Ricardo Santos</div>
+            <div class="testi-role">Professor · Colégio Anglo São Paulo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="nav-logo-icon">🎯</div>
+          <div class="nav-logo-text">Simulado<span> em Foco</span></div>
+        </div>
+        <p>Plataforma gamificada de simulados para estudantes que levam sua evolução a sério. Engajamento baseado em ciência comportamental.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#">Como funciona</a></li>
+          <li><a href="#">Recursos</a></li>
+          <li><a href="#">Simulados</a></li>
+          <li><a href="#">Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <ul>
+          <li><a href="#">Sobre nós</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Parceiros</a></li>
+          <li><a href="#">Imprensa</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <ul>
+          <li><a href="#">Central de Ajuda</a></li>
+          <li><a href="#">Contato</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Termos de Uso</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Simulado em Foco. Todos os direitos reservados.</span>
+      <span>Feito com 🎯 para estudantes que não desistem.</span>
+    </div>
+  </footer>
+
+</div><!-- /screen-landing -->
+
+<!-- ============================================================
+     SCREEN: DASHBOARD
+============================================================ -->
+<div id="screen-dashboard" class="screen hidden">
+  <div class="dashboard-header">
+    <div>
+      <div class="dash-welcome">Bem-vindo de volta 👋</div>
+      <div class="dash-name" id="dash-name">Estudante</div>
+    </div>
+    <div class="dash-actions">
+      <span class="badge badge-violet" id="dash-level-badge">Nível 1 — Iniciante</span>
+      <button class="btn-primary" onclick="App.startQuiz()">🚀 Iniciar Simulado</button>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-stat-card" style="--accent:var(--amber)">
+      <div class="dash-stat-icon">⭐</div>
+      <div class="dash-stat-value" id="dash-score">0</div>
+      <div class="dash-stat-label">Pontuação Total</div>
+    </div>
+    <div class="dash-stat-card" style="--accent:var(--green)">
+      <div class="dash-stat-icon">✅</div>
+      <div class="dash-stat-value" id="dash-correct">0</div>
+      <div class="dash-stat-label">Questões Corretas</div>
+    </div>
+    <div class="dash-stat-card" style="--accent:var(--teal)">
+      <div class="dash-stat-icon">📊</div>
+      <div class="dash-stat-value" id="dash-rate">—</div>
+      <div class="dash-stat-label">Taxa de Acertos</div>
+    </div>
+    <div class="dash-stat-card" style="--accent:var(--violet)">
+      <div class="dash-stat-icon">📝</div>
+      <div class="dash-stat-value" id="dash-total">0</div>
+      <div class="dash-stat-label">Questões Respondidas</div>
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-card">
+      <h3>Progresso para o Próximo Nível</h3>
+      <div class="level-bar-wrap">
+        <div class="level-label">
+          <span>Nível Atual</span>
+          <span id="dash-xp-label">0 / 500 XP</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="dash-xp-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="level-bar-wrap">
+        <div class="level-label">
+          <span>Taxa de Acerto Geral</span>
+          <span id="dash-rate2">—</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="dash-rate-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--teal-lt))"></div>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:16px">Complete mais simulados para desbloquear conquistas e subir de nível.</p>
+    </div>
+    <div class="progress-card">
+      <h3>Medalhas Conquistadas</h3>
+      <div class="medals-grid" id="dash-medals">
+        <div class="medal-item" data-medal="iniciante">
+          <span class="medal-emoji">🏅</span>
+          <div><div class="medal-name">Iniciante</div><div class="medal-req">1º acerto</div></div>
+        </div>
+        <div class="medal-item" data-medal="persistente">
+          <span class="medal-emoji">🥈</span>
+          <div><div class="medal-name">Persistente</div><div class="medal-req">3 acertos</div></div>
+        </div>
+        <div class="medal-item" data-medal="focado">
+          <span class="medal-emoji">🥇</span>
+          <div><div class="medal-name">Focado</div><div class="medal-req">5 acertos</div></div>
+        </div>
+        <div class="medal-item" data-medal="mestre">
+          <span class="medal-emoji">💎</span>
+          <div><div class="medal-name">Mestre</div><div class="medal-req">8 acertos</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:8px">
+    <button class="btn-secondary" onclick="App.showLanding()">← Voltar para o início</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: QUIZ
+============================================================ -->
+<div id="screen-quiz" class="screen hidden">
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="quiz-layout">
+    <!-- MAIN -->
+    <div class="quiz-main">
+      <div class="quiz-header">
+        <div class="quiz-meta">
+          <span class="q-counter">Questão <span id="q-num">1</span> de <span id="q-total">10</span></span>
+          <span class="badge badge-violet" id="q-area-badge">Conhecimentos Gerais</span>
+          <span class="q-timer">⏱ <span id="q-timer">00:00</span></span>
+        </div>
+      </div>
+
+      <div class="question-card" id="question-card">
+        <div class="q-text" id="q-text">Carregando questão…</div>
+        <div class="q-options" id="q-options"></div>
+      </div>
+
+      <div id="feedback-area"></div>
+      <button class="btn-next hidden" id="btn-next" onclick="App.nextQuestion()">Próxima Questão →</button>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="quiz-sidebar">
+      <div class="sidebar-card">
+        <h4>Pontuação Atual</h4>
+        <div class="sidebar-score" id="sb-score">0</div>
+        <div class="sidebar-score-label">pontos acumulados</div>
+      </div>
+      <div class="sidebar-card">
+        <h4>Desempenho</h4>
+        <div class="live-stats">
+          <div class="live-stat live-correct">
+            <div class="live-stat-val" id="sb-correct">0</div>
+            <div class="live-stat-lbl">Acertos</div>
+          </div>
+          <div class="live-stat live-wrong">
+            <div class="live-stat-val" id="sb-wrong">0</div>
+            <div class="live-stat-lbl">Erros</div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <div class="level-label" style="margin-bottom:6px">
+            <span style="font-size:12px;color:var(--text-muted)">Taxa de acerto</span>
+            <span style="font-size:12px;font-weight:700" id="sb-rate">—</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" id="sb-rate-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--teal-lt))"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <h4>Mapa de Questões</h4>
+        <div class="q-map" id="q-map"></div>
+      </div>
+      <div class="sidebar-card">
+        <h4>Tempo de Sessão</h4>
+        <div class="session-time" id="session-time">00:00</div>
+        <div class="session-time-label">minutos : segundos</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: RESULTS
+============================================================ -->
+<div id="screen-results" class="screen hidden">
+  <div class="results-hero">
+    <div class="results-emoji" id="res-emoji">🏆</div>
+    <h2 class="results-title" id="res-title">Simulado Concluído!</h2>
+    <p class="results-sub" id="res-sub">Confira seu desempenho detalhado abaixo.</p>
+  </div>
+
+  <div class="analysis-box" id="res-analysis">
+    <h3>📊 Análise de Desempenho</h3>
+    <p id="res-analysis-text">Carregando análise…</p>
+  </div>
+
+  <div class="results-main-grid">
+    <div class="result-card">
+      <h3>Pontuação Final</h3>
+      <div class="big-score" id="res-score">0</div>
+      <div class="big-score-sub">pontos acumulados</div>
+      <div style="margin-top:24px">
+        <div class="result-row"><span class="result-row-label">Total de Questões</span><span class="result-row-val" id="res-total">10</span></div>
+        <div class="result-row"><span class="result-row-label">Acertos</span><span class="result-row-val" style="color:var(--green)" id="res-correct">0</span></div>
+        <div class="result-row"><span class="result-row-label">Erros</span><span class="result-row-val" style="color:var(--red)" id="res-wrong">0</span></div>
+        <div class="result-row"><span class="result-row-label">Tempo Total</span><span class="result-row-val" id="res-time">—</span></div>
+      </div>
+    </div>
+    <div class="result-card">
+      <h3>Percentual de Acerto</h3>
+      <div class="result-accuracy" id="res-accuracy">0%</div>
+      <div style="margin-top:20px">
+        <div class="bar-track" style="height:14px">
+          <div class="bar-fill" id="res-acc-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <div class="result-row"><span class="result-row-label">Melhor Recompensa</span><span class="result-row-val" style="color:var(--amber)" id="res-best-reward">—</span></div>
+        <div class="result-row"><span class="result-row-label">Medalhas Ganhas</span><span class="result-row-val" id="res-medals-count">0</span></div>
+      </div>
+    </div>
+    <div class="result-card">
+      <h3>Histórico de Recompensas</h3>
+      <div class="rewards-history" id="res-rewards-history">
+        <p style="font-size:14px;color:var(--text-muted)">Nenhuma recompensa ainda.</p>
+      </div>
+    </div>
+    <div class="result-card">
+      <h3>Conquistas Desbloqueadas</h3>
+      <div class="medals-earned-grid" id="res-medals-earned">
+        <p style="font-size:14px;color:var(--text-muted)">Nenhuma conquista ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-actions">
+    <button class="btn-primary" onclick="App.startQuiz()">🔄 Refazer Simulado</button>
+    <button class="btn-secondary" onclick="App.showDashboard()">📊 Ver Dashboard</button>
+    <button class="btn-secondary" onclick="App.showLanding()">🏠 Início</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     ONBOARDING MODAL
+============================================================ -->
+<div class="modal-overlay hidden" id="onboarding-modal">
+  <div class="modal">
+    <div class="modal-icon">🎯</div>
+    <h2 class="modal-title">Bem-vindo ao Simulado em Foco</h2>
+    <p class="modal-sub">Prepare-se para uma experiência de estudos gamificada. A cada acerto, você receberá uma recompensa surpresa — ninguém sabe o valor até revelar!</p>
+    <div class="modal-form">
+      <label>Qual é o seu nome?</label>
+      <input type="text" id="user-name-input" placeholder="Ex: Ana Beatriz" maxlength="40" />
+      <button class="btn-primary" style="width:100%" onclick="App.confirmOnboarding()">
+        Começar Agora 🚀
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT ENGINE
+============================================================ -->
+<script>
+/* ============================================================
+   DATA — QUESTIONS
+============================================================ */
+const QUESTIONS = [
+  {
+    text: "Qual país tem a maior floresta tropical do mundo?",
+    options: ["Indonésia","Brasil","República Democrática do Congo","Peru"],
+    correct: 1,
+    explanation: "A Amazônia, localizada principalmente no Brasil, é a maior floresta tropical do planeta, com mais de 5,5 milhões de km²."
+  },
+  {
+    text: "Qual é o elemento químico com maior número de prótons no núcleo entre os existentes na natureza?",
+    options: ["Urânio (92)","Plutônio (94)","Chumbo (82)","Ouro (79)"],
+    correct: 0,
+    explanation: "O Urânio (Z=92) é o elemento natural com maior número atômico. O Plutônio é sintético e produzido em reatores nucleares."
+  },
+  {
+    text: "Em que ano o Brasil proclamou sua independência de Portugal?",
+    options: ["1808","1889","1822","1831"],
+    correct: 2,
+    explanation: "Dom Pedro I proclamou a Independência do Brasil em 7 de setembro de 1822, às margens do Riacho Ipiranga, em São Paulo."
+  },
+  {
+    text: "Qual é o resultado de √(144) + 3² ?",
+    options: ["18","21","15","27"],
+    correct: 1,
+    explanation: "√144 = 12 e 3² = 9. Portanto, 12 + 9 = 21."
+  },
+  {
+    text: "Qual filósofo grego é considerado o pai da lógica formal?",
+    options: ["Platão","Sócrates","Aristóteles","Pitágoras"],
+    correct: 2,
+    explanation: "Aristóteles desenvolveu o silogismo e a lógica formal, sendo reconhecido como o pai da lógica. Suas obras do Organon são fundamentos da disciplina."
+  },
+  {
+    text: "Qual estrutura celular é responsável pela síntese de proteínas?",
+    options: ["Mitocôndria","Ribossomo","Núcleo","Retículo Endoplasmático"],
+    correct: 1,
+    explanation: "Os ribossomos são organelas responsáveis pela tradução do mRNA em proteínas, processo central no metabolismo celular."
+  },
+  {
+    text: "Qual lei da física afirma que 'a toda ação corresponde uma reação de igual intensidade e sentido oposto'?",
+    options: ["1ª Lei de Newton","2ª Lei de Newton","3ª Lei de Newton","Lei da Gravitação Universal"],
+    correct: 2,
+    explanation: "A 3ª Lei de Newton, também chamada de Lei da Ação e Reação, descreve que forças sempre ocorrem em pares iguais e opostos."
+  },
+  {
+    text: "Qual movimento literário brasileiro tem como obra inaugural 'Memórias Póstumas de Brás Cubas'?",
+    options: ["Romantismo","Parnasianismo","Simbolismo","Realismo"],
+    correct: 3,
+    explanation: "Publicada em 1881, 'Memórias Póstumas de Brás Cubas' de Machado de Assis inaugura o Realismo no Brasil com sua narrativa inovadora."
+  },
+  {
+    text: "Se um trem percorre 360 km em 3 horas, qual é sua velocidade média?",
+    options: ["100 km/h","120 km/h","90 km/h","150 km/h"],
+    correct: 1,
+    explanation: "Velocidade = Distância ÷ Tempo. Logo: 360 km ÷ 3 h = 120 km/h."
+  },
+  {
+    text: "Qual gás é o principal responsável pelo efeito estufa de origem antrópica?",
+    options: ["Oxigênio (O₂)","Nitrogênio (N₂)","Dióxido de Carbono (CO₂)","Argônio (Ar)"],
+    correct: 2,
+    explanation: "O CO₂, emitido principalmente pela queima de combustíveis fósseis e desmatamento, é o principal gás de efeito estufa de origem humana."
+  }
+];
+
+const REWARD_MESSAGES = [
+  { msg: "Excelente! Continue assim!", emoji: "🌟" },
+  { msg: "Você está evoluindo muito!", emoji: "📈" },
+  { msg: "Ótimo trabalho! Siga em frente.", emoji: "💪" },
+  { msg: "Incrível! Você domina isso.", emoji: "🎯" },
+  { msg: "Perfeito! Mais um acerto.", emoji: "✨" },
+  { msg: "Show de bola! Focado total.", emoji: "🔥" }
+];
+
+const ERROR_MESSAGES = [
+  "Não desanime! Cada erro é uma chance de aprender.",
+  "Continue firme! A próxima é sua.",
+  "Boa tentativa! Revise este conteúdo depois.",
+  "Faz parte do processo. Você está crescendo!",
+  "Sem problemas! Perseverança é a chave."
+];
+
+const REWARD_VALUES = [10, 20, 50, 100, 200];
+
+const ACHIEVEMENTS = [
+  { id: "iniciante",   emoji: "🏅", name: "Iniciante",           threshold: 1,  desc: "Primeiro acerto!" },
+  { id: "persistente", emoji: "🥈", name: "Persistente",         threshold: 3,  desc: "3 acertos!" },
+  { id: "focado",      emoji: "🥇", name: "Focado",              threshold: 5,  desc: "5 acertos!" },
+  { id: "mestre",      emoji: "💎", name: "Mestre do Simulado",  threshold: 8,  desc: "8 acertos! Lenda!" }
+];
+
+/* ============================================================
+   APP STATE
+============================================================ */
+const state = {
+  userName: "Estudante",
+  score: 0,
+  totalCorrect: 0,
+  totalAnswered: 0,
+  medals: [],
+  // quiz
+  currentQ: 0,
+  answered: false,
+  correct: 0,
+  wrong: 0,
+  rewardHistory: [],
+  sessionStart: null,
+  timerInterval: null,
+  sessionTimerInterval: null,
+  qTimerInterval: null,
+  qSeconds: 0
+};
+
+/* ============================================================
+   UTILITY
+============================================================ */
+function $(id) { return document.getElementById(id); }
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function formatTime(s) {
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const sec = (s%60).toString().padStart(2,'0');
+  return `${m}:${sec}`;
+}
+function showScreen(id) {
+  ['screen-landing','screen-loading','screen-dashboard','screen-quiz','screen-results']
+    .forEach(s => $(s).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ============================================================
+   APP
+============================================================ */
+const App = {
+
+  /* ---- LANDING ---- */
+  showLanding() {
+    showScreen('screen-landing');
+    $('nav').style.display = '';
+  },
+
+  showOnboarding() {
+    $('onboarding-modal').classList.remove('hidden');
+    setTimeout(() => $('user-name-input').focus(), 100);
+  },
+
+  confirmOnboarding() {
+    const name = $('user-name-input').value.trim();
+    state.userName = name || "Estudante";
+    $('onboarding-modal').classList.add('hidden');
+    App.startQuiz();
+  },
+
+  /* ---- DASHBOARD ---- */
+  showDashboard() {
+    $('dash-name').textContent = state.userName;
+    $('dash-score').textContent = state.score.toLocaleString('pt-BR');
+    $('dash-correct').textContent = state.totalCorrect;
+    $('dash-total').textContent = state.totalAnswered;
+    if (state.totalAnswered > 0) {
+      const rate = Math.round((state.totalCorrect/state.totalAnswered)*100);
+      $('dash-rate').textContent = rate + '%';
+      $('dash-rate2').textContent = rate + '%';
+      $('dash-rate-bar').style.width = rate + '%';
+    }
+    // level
+    const lvl = App._getLevel(state.score);
+    $('dash-level-badge').textContent = `Nível ${lvl.num} — ${lvl.name}`;
+    const xp = state.score % 500;
+    $('dash-xp-label').textContent = `${xp} / 500 XP`;
+    $('dash-xp-bar').style.width = (xp/5) + '%';
+    // medals
+    ACHIEVEMENTS.forEach(a => {
+      const el = document.querySelector(`[data-medal="${a.id}"]`);
+      if (el) el.classList.toggle('earned', state.medals.includes(a.id));
+    });
+    showScreen('screen-dashboard');
+  },
+
+  _getLevel(score) {
+    if (score >= 2000) return { num: 5, name: "Lendário" };
+    if (score >= 1000) return { num: 4, name: "Expert" };
+    if (score >= 500)  return { num: 3, name: "Avançado" };
+    if (score >= 200)  return { num: 2, name: "Intermediário" };
+    return { num: 1, name: "Iniciante" };
+  },
+
+  /* ---- START QUIZ ---- */
+  async startQuiz() {
+    showScreen('screen-loading');
+    await sleep(1800);
+    // reset quiz state
+    state.currentQ = 0;
+    state.answered = false;
+    state.correct = 0;
+    state.wrong = 0;
+    state.rewardHistory = [];
+    state.sessionStart = Date.now();
+    clearInterval(state.sessionTimerInterval);
+    clearInterval(state.qTimerInterval);
+    state.qSeconds = 0;
+
+    showScreen('screen-quiz');
+    App._buildQMap();
+    App._startSessionTimer();
+    App._renderQuestion();
+  },
+
+  _buildQMap() {
+    const map = $('q-map');
+    map.innerHTML = '';
+    QUESTIONS.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'q-dot' + (i === 0 ? ' current' : '');
+      d.textContent = i + 1;
+      d.id = `q-dot-${i}`;
+      map.appendChild(d);
+    });
+  },
+
+  _updateQMap() {
+    QUESTIONS.forEach((_, i) => {
+      const dot = $(`q-dot-${i}`);
+      if (!dot) return;
+      dot.className = 'q-dot';
+      if (i === state.currentQ) { dot.classList.add('current'); }
+      else if (i < state.currentQ) {
+        const wasCorrect = state.rewardHistory[i] !== undefined;
+        dot.classList.add(wasCorrect ? 'done-c' : 'done-w');
+      }
+    });
+  },
+
+  _startSessionTimer() {
+    let secs = 0;
+    $('session-time').textContent = '00:00';
+    state.sessionTimerInterval = setInterval(() => {
+      secs++;
+      $('session-time').textContent = formatTime(secs);
+    }, 1000);
+  },
+
+  _startQTimer() {
+    clearInterval(state.qTimerInterval);
+    state.qSeconds = 0;
+    $('q-timer').textContent = '00:00';
+    state.qTimerInterval = setInterval(() => {
+      state.qSeconds++;
+      $('q-timer').textContent = formatTime(state.qSeconds);
+    }, 1000);
+  },
+
+  _renderQuestion() {
+    const q = QUESTIONS[state.currentQ];
+    state.answered = false;
+
+    // progress
+    const pct = (state.currentQ / QUESTIONS.length) * 100;
+    $('quiz-progress-fill').style.width = pct + '%';
+
+    $('q-num').textContent = state.currentQ + 1;
+    $('q-total').textContent = QUESTIONS.length;
+    $('q-text').textContent = q.text;
+
+    // animate card
+    const card = $('question-card');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(16px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 20);
+
+    // options
+    const optContainer = $('q-options');
+    optContainer.innerHTML = '';
+    const letters = ['A','B','C','D'];
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'q-option';
+      btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+      btn.onclick = () => App.selectAnswer(i);
+      optContainer.appendChild(btn);
+    });
+
+    $('feedback-area').innerHTML = '';
+    $('btn-next').classList.add('hidden');
+    App._updateQMap();
+    App._startQTimer();
+  },
+
+  selectAnswer(idx) {
+    if (state.answered) return;
+    state.answered = true;
+    clearInterval(state.qTimerInterval);
+
+    const q = QUESTIONS[state.currentQ];
+    const opts = $('q-options').querySelectorAll('.q-option');
+    opts.forEach(o => o.disabled = true);
+
+    const isCorrect = idx === q.correct;
+    opts[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) opts[q.correct].classList.add('correct');
+
+    if (isCorrect) {
+      state.correct++;
+      state.totalCorrect++;
+      const pts = rand(REWARD_VALUES);
+      state.score += pts;
+      state.totalAnswered++;
+      state.rewardHistory[state.currentQ] = pts;
+      App._updateSidebar();
+      App._checkAchievements();
+      App._showReward(pts);
+    } else {
+      state.wrong++;
+      state.totalAnswered++;
+      App._updateSidebar();
+      App._showWrongFeedback(q);
+    }
+  },
+
+  _updateSidebar() {
+    $('sb-score').textContent = state.score.toLocaleString('pt-BR');
+    $('sb-correct').textContent = state.correct;
+    $('sb-wrong').textContent = state.wrong;
+    const total = state.correct + state.wrong;
+    if (total > 0) {
+      const rate = Math.round((state.correct/total)*100);
+      $('sb-rate').textContent = rate + '%';
+      $('sb-rate-bar').style.width = rate + '%';
+    }
+  },
+
+  _showReward(pts) {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'reward-overlay';
+    const rm = rand(REWARD_MESSAGES);
+    // particles
+    const particleColors = ['#F59E0B','#A855F7','#06B6D4','#10B981','#FCD34D'];
+    let particlesHTML = '<div class="particles">';
+    for (let i=0; i<18; i++) {
+      const angle = (i/18)*360;
+      const dist = 80 + Math.random()*80;
+      const tx = Math.cos(angle*Math.PI/180)*dist;
+      const ty = Math.sin(angle*Math.PI/180)*dist - 60;
+      const c = rand(particleColors);
+      particlesHTML += `<div class="particle" style="
+        left:50%;top:50%;
+        background:${c};
+        animation-delay:${Math.random()*0.2}s;
+        --tx:translate(${tx}px,${ty}px);
+        width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;
+      "></div>`;
+    }
+    particlesHTML += '</div>';
+
+    overlay.innerHTML = `
+      <div class="reward-card">
+        ${particlesHTML}
+        <div class="reward-emoji">${rm.emoji}</div>
+        <div class="reward-label">🎉 Surpresa!</div>
+        <div class="reward-points">+${pts}</div>
+        <div class="reward-points-label">pontos desbloqueados</div>
+        <div class="reward-message">${rm.msg}</div>
+        <button class="reward-continue" onclick="App._closeReward(this)">Continuar →</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    // show wrong feedback after
+    const q = QUESTIONS[state.currentQ];
+    App._showCorrectFeedback(q);
+    $('btn-next').classList.remove('hidden');
+    App._updateQMap();
+  },
+
+  _closeReward(btn) {
+    btn.closest('.reward-overlay').remove();
+  },
+
+  _showCorrectFeedback(q) {
+    const rm = rand(REWARD_MESSAGES);
+    $('feedback-area').innerHTML = `
+      <div class="feedback-box feedback-correct">
+        <div class="feedback-icon">✅</div>
+        <div>
+          <div class="feedback-title">${rm.emoji} Resposta Correta!</div>
+          <div class="feedback-text">${q.explanation}</div>
+        </div>
+      </div>`;
+  },
+
+  _showWrongFeedback(q) {
+    const msg = rand(ERROR_MESSAGES);
+    $('feedback-area').innerHTML = `
+      <div class="feedback-box feedback-wrong">
+        <div class="feedback-icon">❌</div>
+        <div>
+          <div class="feedback-title">Resposta Incorreta</div>
+          <div class="feedback-text"><strong>Correto:</strong> ${q.options[q.correct]}<br><br>${q.explanation}<br><br><em>${msg}</em></div>
+        </div>
+      </div>`;
+    $('btn-next').classList.remove('hidden');
+    App._updateQMap();
+  },
+
+  _checkAchievements() {
+    ACHIEVEMENTS.forEach(a => {
+      if (!state.medals.includes(a.id) && state.correct >= a.threshold) {
+        state.medals.push(a.id);
+        App._showAchievement(a);
+      }
+    });
+  },
+
+  _showAchievement(a) {
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.innerHTML = `
+      <div class="achievement-toast-icon">${a.emoji}</div>
+      <div>
+        <div class="achievement-toast-title">🏆 Conquista Desbloqueada!</div>
+        <div class="achievement-toast-name">${a.name}</div>
+        <div class="achievement-toast-sub">${a.desc}</div>
+      </div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.5s, transform 0.5s';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100px)';
+      setTimeout(() => toast.remove(), 500);
+    }, 3200);
+  },
+
+  nextQuestion() {
+    state.currentQ++;
+    if (state.currentQ >= QUESTIONS.length) {
+      App._finishQuiz();
+    } else {
+      App._renderQuestion();
+    }
+  },
+
+  _finishQuiz() {
+    clearInterval(state.sessionTimerInterval);
+    clearInterval(state.qTimerInterval);
+    const elapsed = Math.round((Date.now() - state.sessionStart) / 1000);
+    $('quiz-progress-fill').style.width = '100%';
+
+    // populate results
+    const total = QUESTIONS.length;
+    const correct = state.correct;
+    const wrong = state.wrong;
+    const acc = Math.round((correct/total)*100);
+    const score = state.score;
+
+    $('res-score').textContent = score.toLocaleString('pt-BR');
+    $('res-total').textContent = total;
+    $('res-correct').textContent = correct;
+    $('res-wrong').textContent = wrong;
+    $('res-time').textContent = formatTime(elapsed);
+    $('res-accuracy').textContent = acc + '%';
+    $('res-accuracy').className = 'result-accuracy ' + (acc>=70?'good':acc>=40?'ok':'low');
+    $('res-acc-bar').style.width = acc + '%';
+    $('res-medals-count').textContent = state.medals.length;
+
+    // best reward
+    const best = Math.max(...state.rewardHistory.filter(x=>x!==undefined), 0);
+    $('res-best-reward').textContent = best > 0 ? `+${best} pts` : '—';
+
+    // emoji & title
+    if (acc >= 80) { $('res-emoji').textContent='🏆'; $('res-title').textContent='Desempenho Excepcional!'; }
+    else if (acc >= 60) { $('res-emoji').textContent='🎯'; $('res-title').textContent='Muito Bom!'; }
+    else if (acc >= 40) { $('res-emoji').textContent='📚'; $('res-title').textContent='Bom Esforço!'; }
+    else { $('res-emoji').textContent='💪'; $('res-title').textContent='Continue Praticando!'; }
+
+    $('res-sub').textContent = `Você respondeu ${total} questões em ${formatTime(elapsed)} e acumulou ${score.toLocaleString('pt-BR')} pontos.`;
+
+    // analysis
+    const analyses = [
+      acc >= 80 ? "Seu desempenho demonstra consistência e elevado nível de engajamento durante toda a atividade. A taxa de acerto superior a 80% evidencia domínio sólido do conteúdo avaliado." : "",
+      acc >= 60 && acc < 80 ? "Seu desempenho é positivo e reflete boa base de conhecimento. Com revisão dos tópicos em que errou, você atingirá um nível de excelência rapidamente." : "",
+      acc >= 40 && acc < 60 ? "Você demonstrou persistência e comprometimento ao concluir o simulado. Revise os conteúdos das questões erradas e repita o simulado para consolidar seu aprendizado." : "",
+      acc < 40 ? "A prática constante é o caminho para a excelência. Identifique os tópicos com menor desempenho e dedique tempo de revisão. Você já deu o primeiro passo importante ao concluir o simulado." : ""
+    ].filter(Boolean)[0];
+    $('res-analysis-text').textContent = analyses;
+
+    // reward history
+    const rh = $('res-rewards-history');
+    rh.innerHTML = '';
+    let rewardCount = 0;
+    QUESTIONS.forEach((q, i) => {
+      if (state.rewardHistory[i] !== undefined) {
+        rewardCount++;
+        const pts = state.rewardHistory[i];
+        const div = document.createElement('div');
+        div.className = 'reward-history-item';
+        div.innerHTML = `<span class="rhi-q">Q${i+1} — ${q.text.slice(0,40)}…</span><span class="rhi-pts">+${pts} pts</span>`;
+        rh.appendChild(div);
+      }
+    });
+    if (rewardCount === 0) rh.innerHTML = '<p style="font-size:14px;color:var(--text-muted)">Nenhuma recompensa obtida.</p>';
+
+    // medals earned
+    const me = $('res-medals-earned');
+    me.innerHTML = '';
+    if (state.medals.length === 0) {
+      me.innerHTML = '<p style="font-size:14px;color:var(--text-muted)">Nenhuma conquista ainda. Acerte mais questões!</p>';
+    } else {
+      state.medals.forEach(id => {
+        const a = ACHIEVEMENTS.find(x=>x.id===id);
+        if (!a) return;
+        const d = document.createElement('div');
+        d.className = 'me-item';
+        d.innerHTML = `<div class="me-emoji">${a.emoji}</div><div class="me-name">${a.name}</div>`;
+        me.appendChild(d);
+      });
+    }
+
+    showScreen('screen-results');
+  },
+
+  showDashboard() {
+    App.showDashboard();
+  }
+};
+
+/* ============================================================
+   KEYBOARD
+============================================================ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (!$('onboarding-modal').classList.contains('hidden')) {
+      App.confirmOnboarding();
+    } else if (!$('btn-next').classList.contains('hidden') && !$('screen-quiz').classList.contains('hidden')) {
+      App.nextQuestion();
+    }
+  }
+  if (e.key === ' ' && !$('screen-quiz').classList.contains('hidden')) {
+    const overlay = document.querySelector('.reward-overlay');
+    if (overlay) overlay.remove();
+  }
+});
+
+/* ============================================================
+   INIT — COUNTER ANIMATION
+============================================================ */
+function animateCounters() {
+  const counters = document.querySelectorAll('.stat-num, .hero-stat-num');
+  counters.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  counters.forEach(el => obs.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  animateCounters();
+  // card hover glow
+  document.querySelectorAll('.how-card, .feat-card, .testi-card, .dash-stat-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(124,58,237,0.07) 0%, var(--surface) 60%)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.background = '';
+    });
+  });
+});
+</script>
+</body>
+</html>
